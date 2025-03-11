@@ -1,6 +1,5 @@
 #!/bin/csh
-set verbose
-set echo
+
 #
 # DART software - Copyright UCAR. This open source software is provided
 # by UCAR, "as is", without charge, subject to all terms of use at
@@ -49,6 +48,16 @@ setenv LOGFILE "assimilate___${CASE}_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NO
 # Execute the command and capture the output
 bsub -K < ./assimilate_executor.csh
 
+bsub -K \
+     -P 0575 \
+     -J "assm${ENSEMBLE_SIZE}" \
+     -W 00:20 \
+     -o "${LOGFILE}" \
+     -e "${LOGFILE}" \
+     -R "rusage[mem=1GB]" \
+     -n "${ENSEMBLE_SIZE}" \
+     -R "span[ptile=${TASKS_PER_NODE}]" \
+     < ./assimilate_executor.csh
 
 # Capture the exit status of the command
 set ret_exec_ass = $status
