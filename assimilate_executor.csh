@@ -1,4 +1,3 @@
-
 #
 # DART software - Copyright UCAR. This open source software is provided
 # by UCAR, "as is", without charge, subject to all terms of use at
@@ -118,6 +117,8 @@ endif
 
 set dens = `printf %02d    ${ENSEMBLE_SIZE}`
 set dpart = `printf %04d"-"%02d"-"%02d    ${LND_YEAR} ${LND_MONTH} ${LND_DAY}`
+
+# TODO check / improve dir
 set ddir = /work/cmcc/lg07622/land/datain/d4o/datastore/ens_${dens}/${dpart}
 
 echo ${ddir}
@@ -364,6 +365,11 @@ echo "`date` -- BEGIN FILTER benchmark"
 #${MPI_RUN_COMMAND} ${EXEROOT}/filter || exit 6
 ./run_filter.bash
 echo "`date` -- END FILTER benchmark"
+
+
+
+exit 0
+
 
 #=========================================================================
 # Block 7: Put the DART posterior into the CLM restart file. The CLM

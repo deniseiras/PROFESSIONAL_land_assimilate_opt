@@ -24,7 +24,8 @@ export RUNDIR=$4             # diretório de execução
 
 # Local variables
 #
-# TODO: change for the operational when tested
+
+# TODO check / improve dir
 export base_ram_disk="/work/cmcc/de34824"
 # export base_ram_disk="/work/cmcc/spreads-lnd"
 export restart_files_mask="${CASE}.clm2_*.r.${LND_DATE_EXT}.nc"

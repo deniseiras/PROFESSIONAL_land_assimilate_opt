@@ -46,8 +46,6 @@ setenv LOGFILE "assimilate___${CASE}_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NO
 # Call and wait the child script
 # Execute the command and capture the return code
 # Execute the command and capture the output
-bsub -K < ./assimilate_executor.csh
-
 bsub -K \
      -P 0575 \
      -J "assm${ENSEMBLE_SIZE}" \
@@ -57,6 +55,8 @@ bsub -K \
      -R "rusage[mem=1GB]" \
      -n "${ENSEMBLE_SIZE}" \
      -R "span[ptile=${TASKS_PER_NODE}]" \
+     -q p_short \
+     -app spreads_filter \
      < ./assimilate_executor.csh
 
 # Capture the exit status of the command
