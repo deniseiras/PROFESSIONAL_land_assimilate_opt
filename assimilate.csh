@@ -46,14 +46,16 @@ setenv LOGFILE "assimilate___${CASE}_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NO
 # Call and wait the child script
 # Execute the command and capture the return code
 # Execute the command and capture the output
+
+#     -R "rusage[mem=1GB]" \
 bsub -K \
      -P 0575 \
-     -J "assm${ENSEMBLE_SIZE}" \
+     -J "${CASE}" \
      -W 00:20 \
      -o "${LOGFILE}" \
      -e "${LOGFILE}" \
-     -R "rusage[mem=1GB]" \
-     -n "${ENSEMBLE_SIZE}" \
+     -x \
+     -n "${TOTALPES}" \
      -R "span[ptile=${TASKS_PER_NODE}]" \
      -q p_short \
      -app spreads_filter \
@@ -69,6 +71,7 @@ else
     echo "***** Assimilation FAILED ! *****"
 endif
 echo "=====> Exit status: $ret_exec_ass"
+echo "LOG FILE: ${LOGFILE}"
 
 # If successful, print the end message
 echo "`date` -- END CLM_ASSIMILATE benchmark"

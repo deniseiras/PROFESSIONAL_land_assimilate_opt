@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 ###BSUB -n 360
 ###BSUB -R "span[ptile=72]" 
 ###BSUB -q p_short
