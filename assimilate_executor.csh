@@ -1,3 +1,4 @@
+#!/bin/csh
 #
 # DART software - Copyright UCAR. This open source software is provided
 # by UCAR, "as is", without charge, subject to all terms of use at
@@ -50,11 +51,15 @@ module -t list
 
 # xmlquery must be executed in $CASEROOT.
 cd ${CASEROOT}
+setenv CASE           `./xmlquery CASE        --value`
+setenv ENSEMBLE_SIZE  `./xmlquery NINST_LND   --value`
 setenv EXEROOT        `./xmlquery EXEROOT     --value`
 setenv RUNDIR         `./xmlquery RUNDIR      --value`
 setenv ARCHIVE        `./xmlquery DOUT_S_ROOT --value`
+setenv TOTALPES       `./xmlquery TOTALPES    --value`
 setenv STOP_N         `./xmlquery STOP_N      --value`
 setenv DATA_ASSIMILATION_CYCLES `./xmlquery DATA_ASSIMILATION_CYCLES --value`
+setenv TASKS_PER_NODE `./xmlquery MAX_TASKS_PER_NODE --value`
 
 # Most of this syntax can be determined from CASEROOT  ./preview_run
 setenv MPI_RUN_COMMAND "mpiexec_mpt -np $TOTALPES omplace -tm open64"
