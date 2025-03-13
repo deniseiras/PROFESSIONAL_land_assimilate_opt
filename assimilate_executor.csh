@@ -372,10 +372,6 @@ echo "`date` -- BEGIN FILTER benchmark"
 echo "`date` -- END FILTER benchmark"
 
 
-
-exit 0
-
-
 #=========================================================================
 # Block 7: Put the DART posterior into the CLM restart file. The CLM
 # restart file is also the prior for the next forecast.
