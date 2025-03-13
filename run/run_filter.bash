@@ -127,6 +127,6 @@ fi
 
 
 pwd
-ls -ltr
+# ls -ltr # DMAE - many files in dir - expensive
 
 exit $rc
