@@ -59,6 +59,11 @@ process_data() {
     SECONDS=0 
 
     local ens_index=${LSF_PM_TASKID}
+    # processes > ens_size will not be processed)
+    if (( ens_index > ${ENS_MEMBERS_REQ} )); then
+        return 0
+    fi
+    
     echo "Starting processing member ${ens_index} ..."
     echo "CASE         = "$CASE
     echo "LND_DATE_EXT = "$LND_DATE_EXT
@@ -68,7 +73,7 @@ process_data() {
     # (Optionally sort them if order is important)
     local files=( $(ls ${restart_files_mask} | sort) )
 
-    # Check that the ensemble index is within the valid range
+    # Check that the ensemble index is not superior to the number of files
     if (( ens_index < 1 || ens_index > ${#files[@]} )); then
         echo "Error: Ensemble index $ens_index is out of range (1 - ${#files[@]})."
         return 1
@@ -129,6 +134,8 @@ if [ "${ens_members_found}" -lt "${ENS_MEMBERS_REQ}" ]; then
 fi
 
 source /users_home/cmcc/lg07622/modules_juno.me
+
+# TODO - submit only for desired members/processes. Spread across all nodes
 blaunch process_data
 
 
