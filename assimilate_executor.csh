@@ -18,8 +18,8 @@
 # on multiple platforms. This will help us maintain the script.
 #=========================================================================
 
-set verbose
-set echo
+# set verbose
+# set echo
 
 echo "Running assimilation executor with params:"
 #_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NODE}.log"
