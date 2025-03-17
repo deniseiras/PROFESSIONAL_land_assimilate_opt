@@ -21,6 +21,8 @@
 # set verbose
 # set echo
 
+echo "`date` -- BEGIN CLM_ASSIMILATE_EXECUTOR benchmark"
+
 echo "Running assimilation executor with params:"
 #_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NODE}.log"
 echo "CASE: ${CASE}, ENSEMBLE_SIZE: ${ENSEMBLE_SIZE}, TOTALPES: ${TOTALPES}, TASKS_PER_NODE: ${TASKS_PER_NODE}"
@@ -204,7 +206,12 @@ if ( -e clm_inflation_cookie ) then
 
 echo "Runninng  fill_inflation_restart"
    #${EXEROOT}/fill_inflation_restart || exit  4
-   ./run_inflation.bash
+./run_inflation.bash
+if ($status != 0) then
+    echo "ERROR: fill_inflation_restart failed"
+    exit 1
+fi
+   
 echo "End running  fill_inflation_restart"
 
    foreach FILE ( input_priorinf_*.nc )
@@ -338,27 +345,11 @@ echo "`date` -- BEGIN CLM_TO_DART benchmark"
 
 ${REMOVE} restart_files.txt history_files.txt vector_files.txt
 
-echo "ENSEMBLE NUMBER : $ENSEMBLE_SIZE"
-
 ./run_clm_to_dart_par.bash $CASE $LND_DATE_EXT $ENSEMBLE_SIZE $RUNDIR
-
-# foreach FILE ( ${CASE}.clm2_*.r.${LND_DATE_EXT}.nc )
-
-#    # create unique output filename for the copy that has the indeterminate
-#    # values replaced by the _FillValue. The copies are the files that will
-#    # be used to construct the DART vector.
-#    set OUTPUT = `echo $FILE | sed -e "s/${CASE}.//"`
-
-#    ${COPY} $FILE clm.nc
-#    #${EXEROOT}/clm_to_dart >& /dev/null
-#    ./run_clm_to_dart.bash
-#    ${MOVE} clm.nc $OUTPUT
-
-# end
-
-# ls -1         clm2_*.r.${LND_DATE_EXT}.nc  >! restart_files.txt
-# ls -1 ${CASE}.clm2_*.h0.${LND_DATE_EXT}.nc >! history_files.txt
-# ls -1 ${CASE}.clm2_*.h2.${LND_DATE_EXT}.nc >! vector_files.txt
+if ($status != 0) then
+    echo "ERROR: clm_to_dart failed"
+    exit 1
+fi
 
 echo "`date` -- END CLM_TO_DART benchmark"
 
@@ -369,6 +360,10 @@ echo "`date` -- END CLM_TO_DART benchmark"
 echo "`date` -- BEGIN FILTER benchmark"
 #${MPI_RUN_COMMAND} ${EXEROOT}/filter || exit 6
 ./run_filter.bash
+if ($status != 0) then
+    echo "ERROR: filter failed"
+    exit 1
+fi
 echo "`date` -- END FILTER benchmark"
 
 
@@ -389,50 +384,6 @@ echo "`date` -- BEGIN DART_TO_CLM benchmark"
 
 if ($REPARTITION != 0) then
 unlink clm_vector_history   
-#   # Track the ensemble count to locate matching vector analysis file
-#   @ enscount = 1
-#
-#   foreach RESTART ( ${CASE}.clm2_*.r.${LND_DATE_EXT}.nc )
-#    
-#     set POSTERIOR_RESTART = `echo $RESTART | sed -e "s/${CASE}.//"`
-#     set POSTERIOR_VECTOR  = `printf analysis_member_00%02d_d03.nc $enscount`
-#     set CLM_VECTOR        = `printf ${CASE}.clm2_00%02d.h2.${LND_DATE_EXT}.nc $enscount` 
-#     
-#     # Confirm that H2OSNO prior/posterior files exist
-#
-#     if (! -e $POSTERIOR_VECTOR || ! -e $CLM_VECTOR) then
-#        echo "ERROR: assimilate.csh could not find $POSTERIOR_VECTOR or $CLM_VECTOR"
-#        echo "When SWE re-partitioning is enabled H2OSNO must be"
-#        echo "within vector history file (h2). Also the analysis"
-#        echo "stage must be output in 'stages_to_write' within filter_nml"
-#        exit 7
-#     endif
-#     
-#     cp input.nml tmp/$NDIR/.
-#     cp run_dart_to_clmB.bash tmp/$NDIR/.
-#     
-#     cd tmp/$NDIR   
-#     ${LINK} ../../$POSTERIOR_RESTART  dart_posterior.nc
-#     ${LINK} ../../$POSTERIOR_VECTOR  dart_posterior_vector.nc
-#     ${LINK} ../../$RESTART   clm_restart.nc
-#     ${LINK} ../../$CLM_VECTOR   clm_vector_history.nc
-#
-#     #${EXEROOT}/dart_to_clm >& /dev/null
-#     ./run_dart_to_clm.bash
-#
-#     if ($status != 0) then
-#        echo "ERROR: dart_to_clm failed for $RESTART"
-#        exit 7
-#     endif
-#     
-#     foreach LIST (clm_restart.nc clm_vector_history.nc dart_posterior.nc \
-#              dart_posterior_vector.nc )
-#
-#             unlink $LIST
-#     end
-#     @ enscount ++
-#  end
-
 
      #${EXEROOT}/dart_to_clm >& /dev/null
      ./run_dart_to_clm_snow.bash ${CASE} ${LND_DATE_EXT}
@@ -448,26 +399,25 @@ unlink clm_vector_history
              unlink $LIST
      end
 
-
 else
 
-foreach RESTART ( ${CASE}.clm2_*.r.${LND_DATE_EXT}.nc )
+   foreach RESTART ( ${CASE}.clm2_*.r.${LND_DATE_EXT}.nc )
 
-   set POSTERIOR = `echo $RESTART | sed -e "s/${CASE}.//"`
+      set POSTERIOR = `echo $RESTART | sed -e "s/${CASE}.//"`
 
-   ${LINK} $POSTERIOR dart_posterior.nc
-   ${LINK} $RESTART   clm_restart.nc
+      ${LINK} $POSTERIOR dart_posterior.nc
+      ${LINK} $RESTART   clm_restart.nc
 
-   #${EXEROOT}/dart_to_clm >& /dev/null
-   ./run_dart_to_clm.bash
-   if ($status != 0) then
-      echo "ERROR: dart_to_clm failed for $RESTART"
-        exit 8
-   endif
+      #${EXEROOT}/dart_to_clm >& /dev/null
+      ./run_dart_to_clm.bash
+      if ($status != 0) then
+         echo "ERROR: dart_to_clm failed for $RESTART"
+         exit 8
+      endif
 
-   unlink dart_posterior.nc
-   unlink clm_restart.nc
-end
+      unlink dart_posterior.nc
+      unlink clm_restart.nc
+   end
 
 endif
 
@@ -522,7 +472,7 @@ end
 
 ${MOVE} ${RUNDIR}/*.db ${RUNDIR}/tmp/.
 
-echo "`date` -- END CLM_ASSIMILATE benchmark"
+echo "`date` -- END CLM_ASSIMILATE_EXECUTOR benchmark"
 
 exit 0
 

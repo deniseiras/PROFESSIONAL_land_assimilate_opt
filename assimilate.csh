@@ -19,6 +19,8 @@
 # on multiple platforms. This will help us maintain the script.
 #=========================================================================
 
+echo "`date` -- BEGIN CLM_ASSIMILATE benchmark"
+
 # As of CESM2.0, the assimilate.csh is called by CESM - and has
 # two arguments: the CASEROOT and the DATA_ASSIMILATION_CYCLE
 if ($# == 0) then
@@ -33,7 +35,6 @@ endif
 setenv CASEROOT $1
 setenv ASSIMILATION_CYCLE $2
 
-echo "`date` -- BEGIN CLM_ASSIMILATE benchmark"
 
 # xmlquery must be executed in $CASEROOT.
 cd ${CASEROOT}
@@ -73,7 +74,6 @@ endif
 echo "=====> Exit status: $ret_exec_ass"
 echo "LOG FILE: ${LOGFILE}"
 
-# If successful, print the end message
 echo "`date` -- END CLM_ASSIMILATE benchmark"
 
 exit $ret_exec_ass

@@ -1,51 +1,28 @@
 #!/bin/bash
 #
+# Este script processa arquivos clm_to_dart em paralelo usando o sistema de jobs 'bsub'.
+# Ele cria um job para cada membro do ensemble e espera que todos os jobs sejam concluídos
+# antes de prosseguir para a próxima etapa.
 
-#source /users_home/cmcc/lg07622/modules_juno.me
 
-#CASE='clm5_sc_frac'
-CASE=$1
+# HISTORY
+#
+# author            version     comments
+# Luis Gustavo      none        Improved paralelized version submitting many jobs in a for in any node available
+# Denis Eiras       1.0.0       Improved paralelized version submitting many jobs in a job array in one node
+# Denis Eiras       1.1.0       Improved paralelized version distributing jobs in some nodes
+# Denis Eiras       1.1.1       Adapting to the spreads - firtst github version
 
-#LND_DATE_EXT='2011-01-02-00000'
-LND_DATE_EXT=$2
+
+# Argumentos do script (valores fornecidos na linha de comando)
+#
+export CASE=$1               # CASE é o nome do caso específico
+export LND_DATE_EXT=$2       # LND_DATE_EXT é a extensão da data para identificar os arquivos
+
+
+source /users_home/cmcc/lg07622/modules_juno.me
 
 string_id=""
-
-
-#==============================================
-#     Function def
-#==============================================
-# Take the id of the case.submit processes
-take_id()
-{
-
-  output=$("$@")
-  #echo $output | awk '{print $NF}'
-  echo 'OUTPUT '$output
-  echo $output
-}
-#
-# Function to process data for a specific year and month
-process_data() {
-#    nmen=$1
-#    if [ -d tmp/$nmen ]; then rm -Rf tmp/$nmen; mkdir -p tmp/$nmen; fi
-#    if [ ! -d tmp/$nmen ]; then mkdir -p tmp/$nmen; fi
-#    cd $nmen
-    
-
-   #jobid=$(take_id ../../../bld/dart_to_clm)
-   #d4o change of executables in directories
-   jobid=$(take_id ../../dart_to_clm)
-
-   #take_id ../../../bld/dart_to_clm
-   #string_id=$string_id" done($jobid)"
-   echo 'JOB_ID '$jobid
-   #echo $string_id
-
-}
-
-export -f process_data
-export -f take_id
 
 unlink clm_vector_history   
 
@@ -111,45 +88,16 @@ for RESTART in "${CASE}.clm2_"*.r."${LND_DATE_EXT}".nc; do
     ln -sf "../../$CLM_VECTOR" "clm_vector_history.nc"
     ln -sf "../../clm_history.nc" "clm_history.nc"
 
-       kk=`bsub -J "process_${NDIR}" -oo "process_${NDIR}.log" << EOF
-#!/bin/bash
-#BSUB -P R000
-#BSUB -W 00:20
-#BSUB -n 2
-#BSUB -q p_short
-#BSUB -R "rusage[mem=2000]"
-#BSUB -R "span[ptile=8]"
-#BSUB -app spreads_filter
-##BSUB -o %J.stdout
-##BSUB -eo %J.stderr
-
-# Load any necessary modules
-source /users_home/cmcc/lg07622/modules_juno.me
-
-# Change to the working directory
-#cd "${dirwrk}"
-
-# Call the function to process data for the current member
-process_data
-EOF`
-
-jobid=`echo "${kk//<}" | awk '{print $2}'`
-if [ $enscount -eq 1 ]; then 
-  string_id=$string_id"post_done(${jobid//>})"
-else
-  string_id=$string_id" && post_done(${jobid//>})"
-fi
+cd "${dirwrk}"
+../../dart_to_clm &
 
 cd ../../
 
 ((enscount++))
 done
 
-   echo " string_id = $string_id"
-   bw=0
-   bwait -w "$string_id" || bw=$?
-   bjobs
-   echo "ALL DART_TO_CLM JOBS FINISHED" 
+wait
 
+echo "ALL DART_TO_CLM JOBS FINISHED" 
 exit
 

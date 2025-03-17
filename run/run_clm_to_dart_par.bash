@@ -37,28 +37,13 @@ init_time=$(date +%s)
 echo "Running run_clm_to_dart_par.bash with ... ${CASE} ${LND_DATE_EXT} ${ENS_MEMBERS_REQ} ${RUNDIR} ${PROCESS_PER_NODE} ${EXCLUSIVE_NODE}"
 
 
-# Função que executa o comando passado como argumento e retorna o ID do job que foi submetido.
-#==============================================
-#     Function def
-#==============================================
-# Take the id of the case.submit processes
-take_id()
-{
-
-  output=$("$@")
-  #echo $output | awk '{print $NF}'
-  echo 'OUTPUT '$output
-  echo $output
-}
-
-
 # Function to process data for a specific ensemble member
 #
 process_data() {
 
     SECONDS=0 
 
-    local ens_index=${LSF_PM_TASKID}
+    local ens_index=$1
     # processes > ens_size will not be processed)
     if (( ens_index > ${ENS_MEMBERS_REQ} )); then
         return 0
@@ -118,7 +103,7 @@ process_data() {
 }
 
 export -f process_data
-export -f take_id
+
 
 # Certifica-se de que o diretório temporário "tmp" existe para armazenar os arquivos temporários
 mkdir -p tmp
@@ -135,23 +120,15 @@ fi
 
 source /users_home/cmcc/lg07622/modules_juno.me
 
-# TODO - submit only for desired members/processes. Spread across all nodes
-blaunch process_data
 
+# TODO - Spread across all nodes evenly to improve performance. 
+# @This was reached before using blaunch, but now, its not possible because blaunch spreads across all processes
+# Executes the process_data function for each ensemble member
+for ii in $(seq 1 ${ENS_MEMBERS_REQ}); do
+    process_data ${ii} &
+done
 
-
-# # Extrai o ID do job submetido a partir da saída do comando 'bsub'
-# jobid=$(echo "${kk//<}" | awk '{print $2}')
-
-# # Se for o primeiro job, inicia a string com 'done(jobid)'
-# string_id="done(${jobid//>})"
-
-
-# # Usa o comando 'bwait' para esperar que todos os jobs sejam concluídos.
-# # Ele só continua para a próxima etapa quando todos os jobs finalizarem.
-# echo " string_id = $string_id"
-# bw=0
-# bwait -w "$string_id" || bw=$?
+wait
 
 
 cd $RUNDIR
@@ -161,6 +138,21 @@ for ii in $(seq 1 ${ENS_MEMBERS_REQ}); do
     echo "Creating restart_files.txt, history_files.txt, vector_files.txt: " $ii
     ni=$(printf "%04d" ${ii})  # Gera o identificador do ensemble (0001, 0002, ...)
     OUTPUT="clm2_${ni}.r.${LND_DATE_EXT}.nc"
+    HZERO="${RUNDIR}/${CASE}.clm2_${ni}.h0.${LND_DATE_EXT}.nc"
+    HTWO="${RUNDIR}/${CASE}.clm2_${ni}.h2.${LND_DATE_EXT}.nc"
+    # Check if the output and HZERO and HTWO exist. If not, exit with error
+    if [ ! -e $OUTPUT ]; then
+        echo "CLM2DART ERROR: could not find $OUTPUT"
+        exit 1
+    fi
+    if [ ! -e $HZERO ]; then
+        echo "CLM2DART ERROR: could not find $HZERO"
+        exit 1
+    fi
+    if [ ! -e $HTWO ]; then
+        echo "CLM2DART ERROR: could not find $HTWO"
+        exit 1
+    fi
 
 
 ls -1 "${OUTPUT}" >> restart_files.txt
@@ -195,4 +187,4 @@ final_time=$(date +%s)
 echo "TOTAL Time: $((final_time - init_time)) seconds"
 
 echo "ALL CLM_TO_DART JOBS FINISHED"
-exit
+exit 0
