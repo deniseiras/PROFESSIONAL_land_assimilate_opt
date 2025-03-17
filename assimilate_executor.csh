@@ -210,7 +210,7 @@ echo "Runninng  fill_inflation_restart"
 if ($status != 0) then
     echo "ERROR: fill_inflation_restart failed"
     exit 1
-fi
+endif
    
 echo "End running  fill_inflation_restart"
 
@@ -349,7 +349,7 @@ ${REMOVE} restart_files.txt history_files.txt vector_files.txt
 if ($status != 0) then
     echo "ERROR: clm_to_dart failed"
     exit 1
-fi
+endif
 
 echo "`date` -- END CLM_TO_DART benchmark"
 
@@ -363,7 +363,7 @@ echo "`date` -- BEGIN FILTER benchmark"
 if ($status != 0) then
     echo "ERROR: filter failed"
     exit 1
-fi
+endif
 echo "`date` -- END FILTER benchmark"
 
 
