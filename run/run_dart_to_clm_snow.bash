@@ -1,20 +1,16 @@
 #!/bin/bash
 #
-# Este script processa arquivos clm_to_dart em paralelo usando o sistema de jobs 'bsub'.
-# Ele cria um job para cada membro do ensemble e espera que todos os jobs sejam concluídos
-# antes de prosseguir para a próxima etapa.
 
+# This script processes CLM files in parallel, running them in background using all the available cores.
 
 # HISTORY
 #
 # author            version     comments
-# Luis Gustavo      none        Improved paralelized version submitting many jobs in a for in any node available
-# Denis Eiras       1.0.0       Improved paralelized version submitting many jobs in a job array in one node
-# Denis Eiras       1.1.0       Improved paralelized version distributing jobs in some nodes
-# Denis Eiras       1.1.1       Adapting to the spreads - firtst github version
+# Luis Gustavo      none        Original version
+# Denis Eiras       1.0.0       Paralelized version - firtst github version
 
 
-# Argumentos do script (valores fornecidos na linha de comando)
+# Script arguments (values provided on the command line)
 #
 export CASE=$1               # CASE é o nome do caso específico
 export LND_DATE_EXT=$2       # LND_DATE_EXT é a extensão da data para identificar os arquivos
