@@ -13,11 +13,13 @@
 # Consequently, snow DA is not currently supported.
 # Implementing snow DA is high on our list of priorities. 
 
-#=========================================================================
-# This block is an attempt to localize all the machine-specific
-# changes to this script such that the same script can be used
-# on multiple platforms. This will help us maintain the script.
-#=========================================================================
+
+# HISTORY
+#
+# author            version     comments
+# Luis Gustavo      none        Original version
+# Denis Eiras       1.0.0       One submission version - Paralelized modules - firtst github version
+
 
 echo "`date` -- BEGIN CLM_ASSIMILATE benchmark"
 
@@ -32,6 +34,9 @@ if ($# < 2) then
     echo "Error: ASSIMILATION_CYCLE (parameter 2) is missing."
     exit 1
 endif
+
+# Script arguments (values provided on the command line)
+#
 setenv CASEROOT $1
 setenv ASSIMILATION_CYCLE $2
 
@@ -47,8 +52,6 @@ setenv LOGFILE "assimilate___${CASE}_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NO
 # Call and wait the child script
 # Execute the command and capture the return code
 # Execute the command and capture the output
-
-#     -R "rusage[mem=1GB]" \
 bsub -K \
      -P 0575 \
      -J "${CASE}" \

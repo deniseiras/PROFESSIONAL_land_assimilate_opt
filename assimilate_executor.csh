@@ -12,11 +12,12 @@
 # Consequently, snow DA is not currently supported.
 # Implementing snow DA is high on our list of priorities. 
 
-#=========================================================================
-# This block is an attempt to localize all the machine-specific
-# changes to this script such that the same script can be used
-# on multiple platforms. This will help us maintain the script.
-#=========================================================================
+
+# HISTORY
+#
+# author            version     comments
+# Luis Gustavo      none        Original version
+# Denis Eiras       1.0.0       Paralelized version - firtst github version
 
 # set verbose
 # set echo
@@ -24,14 +25,12 @@
 echo "`date` -- BEGIN CLM_ASSIMILATE_EXECUTOR benchmark"
 
 echo "Running assimilation executor with params:"
-#_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NODE}.log"
 echo "CASE: ${CASE}, ENSEMBLE_SIZE: ${ENSEMBLE_SIZE}, TOTALPES: ${TOTALPES}, TASKS_PER_NODE: ${TASKS_PER_NODE}"
 echo "CASEROOT: ${CASEROOT}"
 echo "ASSIMILATION_CYCLE: ${ASSIMILATION_CYCLE}"
 
 source ${CASEROOT}/DART_params.csh || exit 1
 
-#source /users_home/cmcc/lg07622/modules_juno.me
 module purge
 unset LIBRARY_PATH
 module load --auto intel-2021.6.0/2021.6.0
