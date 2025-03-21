@@ -125,7 +125,10 @@ set dens = `printf %02d    ${ENSEMBLE_SIZE}`
 set dpart = `printf %04d"-"%02d"-"%02d    ${LND_YEAR} ${LND_MONTH} ${LND_DAY}`
 
 # TODO check / improve dir
-set ddir = /work/cmcc/lg07622/land/datain/d4o/datastore/ens_${dens}/${dpart}
+# ***************EXPS > 2003 must use the spreads-lnd dir *******
+# set ddir = /work/cmcc/lg07622/land/datain/d4o/datastore/ens_${dens}/${dpart}
+set ddir = /work/cmcc/spreads-lnd/land/datain/d4o/datastore/ens_${dens}/${dpart}
+
 
 echo ${ddir}
 ls ${ddir}/*.db
