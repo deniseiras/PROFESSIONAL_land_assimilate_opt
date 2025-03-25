@@ -22,6 +22,7 @@
 
 
 echo "`date` -- BEGIN CLM_ASSIMILATE benchmark"
+setenv now_yyyymmddss `date +%Y%m%d%H%M%S`
 
 # As of CESM2.0, the assimilate.csh is called by CESM - and has
 # two arguments: the CASEROOT and the DATA_ASSIMILATION_CYCLE
@@ -47,7 +48,7 @@ setenv CASE           `./xmlquery CASE        --value`
 setenv ENSEMBLE_SIZE  `./xmlquery NINST_LND   --value`
 setenv TOTALPES       `./xmlquery TOTALPES    --value`
 setenv TASKS_PER_NODE `./xmlquery MAX_TASKS_PER_NODE --value`
-setenv LOGFILE "assimilate___${CASE}_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NODE}.log"
+setenv LOGFILE "assimilate___${CASE}_${ENSEMBLE_SIZE}_${TOTALPES}_${TASKS_PER_NODE}_${now_yyyymmddss}.log"
 
 # Call and wait the child script
 # Execute the command and capture the return code
