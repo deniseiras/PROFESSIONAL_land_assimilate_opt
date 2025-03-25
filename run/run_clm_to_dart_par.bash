@@ -25,15 +25,13 @@ export RUNDIR=$4             # diretório de execução
 # Local variables
 #
 
-# TODO check / improve dir
-export base_ram_disk="/work/cmcc/de34824"
-# export base_ram_disk="/work/cmcc/spreads-lnd"
+# TODO check / improve: directory must be generic for all machines
+export base_ram_disk="/work/cmcc/spreads-lnd"
 export restart_files_mask="${CASE}.clm2_*.r.${LND_DATE_EXT}.nc"
 # Inicializa uma variável string_id que armazenará os IDs dos jobs que serão submetidos.
 string_id=""
 
 
-init_time=$(date +%s)
 echo "Running run_clm_to_dart_par.bash with ... ${CASE} ${LND_DATE_EXT} ${ENS_MEMBERS_REQ} ${RUNDIR} ${PROCESS_PER_NODE} ${EXCLUSIVE_NODE}"
 
 
@@ -122,7 +120,7 @@ source /users_home/cmcc/lg07622/modules_juno.me
 
 
 # TODO - Spread across all nodes evenly to improve performance. 
-# @This was reached before using blaunch, but now, its not possible because blaunch spreads across all processes
+# This was reached before using blaunch, but now, its not possible because blaunch spreads across all processes
 # Executes the process_data function for each ensemble member
 for ii in $(seq 1 ${ENS_MEMBERS_REQ}); do
     process_data ${ii} &
@@ -182,9 +180,6 @@ done
 #done
 
 # Exibe uma mensagem indicando que todos os jobs de processamento foram concluídos
-
-final_time=$(date +%s)
-echo "TOTAL Time: $((final_time - init_time)) seconds"
 
 echo "ALL CLM_TO_DART JOBS FINISHED"
 exit 0
