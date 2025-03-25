@@ -84,12 +84,12 @@ for RESTART in "${CASE}.clm2_"*.r."${LND_DATE_EXT}".nc; do
     ln -sf "../../$CLM_VECTOR" "clm_vector_history.nc"
     ln -sf "../../clm_history.nc" "clm_history.nc"
 
-cd "${dirwrk}"
-../../dart_to_clm &
+    cd "${dirwrk}"
+    ../../dart_to_clm &
 
-cd ../../
+    cd ../../
 
-((enscount++))
+    ((enscount++))
 done
 
 wait

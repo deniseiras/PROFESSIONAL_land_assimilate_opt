@@ -104,7 +104,7 @@ echo "0" > filter.flag
 
 printenv > env.out.$LSB_JOBID
 pwd
-#ls -ltra  # DMAE - many files in dir - expensive
+# TODO - check if this is needed
 ldd ./filter || :
 rc=0
 
@@ -127,6 +127,5 @@ fi
 
 
 pwd
-# ls -ltr # DMAE - many files in dir - expensive
 
 exit $rc
